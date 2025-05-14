@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AFL Classics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background: #c62828;
+      color: white;
+      padding: 20px 10px;
+    }
+    h1 {
+      margin: 0;
+    }
+    .controls {
+      margin: 20px 0;
+    }
+    select, button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    iframe {
+      margin-top: 20px;
+      width: 90%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+    }
+    .score {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>AFL Classics – Watch Legendary Games</h1>
+</header>
+
+<div class="controls">
+  <select id="yearFilter">
+    <option value="">Filter by Year</option>
+  </select>
+  <select id="teamFilter">
+    <option value="">Filter by Team</option>
+  </select>
+  <button onclick="playRandom()">🎲 Random Game</button>
+  <button onclick="toggleScore()">🙈 Toggle Score</button>
+  <button onclick="location.reload()">🔙 Back to Menu</button>
+</div>
+
+<div id="scoreDisplay" class="score"></div>
+<iframe id="videoFrame" allowfullscreen></iframe>
+
+<script>
+  const games = [
+    {
+      title: "2018 Grand Final – West Coast vs Collingwood",
+      year: "2018",
+      teams: ["West Coast", "Collingwood"],
+      video: "https://www.youtube.com/embed/GV_JjvXUpqI",
+      score: "West Coast 79 – 74 Collingwood"
+    },
+    {
+      title: "2005 Grand Final – Sydney vs West Coast",
+      year: "2005",
+      teams: ["Sydney", "West Coast"],
+      video: "https://www.youtube.com/embed/XHJmG6J0vIQ",
+      score: "Sydney 58 – 54 West Coast"
+    },
+    {
+      title: "2001 Round 16 – Essendon vs Kangaroos",
+      year: "2001",
+      teams: ["Essendon", "Kangaroos"],
+      video: "https://www.youtube.com/embed/z5D_q-bt1no",
+      score: "Essendon 171 – 159 Kangaroos"
+    },
+    {
+      title: "2009 Round 14 – St Kilda vs Geelong",
+      year: "2009",
+      teams: ["St Kilda", "Geelong"],
+      video: "https://www.youtube.com/embed/f9z2hR5e6yA",
+      score: "St Kilda 85 – 82 Geelong"
+    },
+    {
+      title: "2017 Grand Final – Richmond vs Adelaide",
+      year: "2017",
+      teams: ["Richmond", "Adelaide"],
+      video: "https://www.youtube.com/embed/JhNlbgRWWkM",
+      score: "Richmond 108 – 60 Adelaide"
+    }
+    // Add more games here!
+  ];
+
+  const videoFrame = document.getElementById('videoFrame');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+
+  let scoreVisible = true;
+
+  function populateFilters() {
+    const years = new Set();
+    const teams = new Set();
+    games.forEach(game => {
+      years.add(game.year);
+      game.teams.forEach(team => teams.add(team));
+    });
+
+    const yearFilter = document.getElementById('yearFilter');
+    [...years].sort().forEach(year => {
+      const opt = document.createElement('option');
+      opt.value = year;
+      opt.textContent = year;
+      yearFilter.appendChild(opt);
+    });
+
+    const teamFilter = document.getElementById('teamFilter');
+    [...teams].sort().forEach(team => {
+      const opt = document.createElement('option');
+      opt.value = team;
+      opt.textContent = team;
+      teamFilter.appendChild(opt);
+    });
+
+    yearFilter.addEventListener('change', filterAndPlay);
+    teamFilter.addEventListener('change', filterAndPlay);
+  }
+
+  function filterAndPlay() {
+    const year = document.getElementById('yearFilter').value;
+    const team = document.getElementById('teamFilter').value;
+
+    let filtered = games;
+
+    if (year) filtered = filtered.filter(g => g.year === year);
+    if (team) filtered = filtered.filter(g => g.teams.includes(team));
+
+    if (filtered.length > 0) {
+      const randomGame = filtered[Math.floor(Math.random() * filtered.length)];
+      playGame(randomGame);
+    } else {
+      alert("No game found with that combination.");
+    }
+  }
+
+  function playRandom() {
+    const randomGame = games[Math.floor(Math.random() * games.length)];
+    playGame(randomGame);
+  }
+
+  function playGame(game) {
+    videoFrame.src = game.video + "?autoplay=1";
+    scoreDisplay.textContent = scoreVisible ? game.score : "";
+  }
+
+  function toggleScore() {
+    scoreVisible = !scoreVisible;
+    const currentText = scoreDisplay.textContent;
+    if (currentText) {
+      scoreDisplay.textContent = scoreVisible ? currentText : "";
+    }
+  }
+
+  // Init
+  populateFilters();
+</script>
+
+</body>
+</html>
